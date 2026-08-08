@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protein Database Statistics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #2d7f3d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            margin: 20px;
+        }
+
+        .statistics {
+            background-color: #f1f1f1;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .statistics h3 {
+            color: #2d7f3d;
+            margin-bottom: 10px;
+        }
+
+        .statistics p {
+            font-size: 16px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .statistics p span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        a {
+            color: #2d7f3d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Protein Database Statistics</h1>
+
+    <div class="container">
+        <!-- MongoDB Statistics -->
+        <div class="statistics">
+            <h3>MongoDB Statistics:</h3>
+            <p><span>Total Proteins:</span> {{ stats.MongoDB['Total Proteins'] }}</p>
+            <p><span>Labeled Proteins:</span> {{ stats.MongoDB['Labeled Proteins'] }}</p>
+            <p><span>Unlabeled Proteins:</span> {{ stats.MongoDB['Unlabeled Proteins'] }}</p>
+        </div>
+
+        <!-- Neo4j Statistics -->
+        <div class="statistics">
+            <h3>Neo4j Statistics:</h3>
+            <p><span>Total Proteins:</span> {{ stats.Neo4j['Total Proteins'] }}</p>
+            <p><span>Labeled Proteins(After Annotation):</span> {{ stats.Neo4j['Labeled Proteins'] }}</p>
+            <p><span>Unlabeled Proteins(After Annotation):</span> {{ stats.Neo4j['Unlabeled Proteins'] }}</p>
+            <p><span>Isolated Proteins (No relationships):</span> {{ stats.Neo4j['Isolated Proteins'] }}</p>
+            <p><span>Average Similarity:</span> {{ stats.Neo4j['Average Similarity'] | round(3) }}</p>
+        </div>
+
+        <!-- Additional Insights -->
+        <div class="statistics">
+            <h3>Additional Insights:</h3>
+            <p><span>Most Common EC Number (MongoDB):</span> {{ stats['Most Common EC Number'] }}</p>
+        </div>
+
+        <a href="/">Back to Search</a>
+    </div>
+
+</body>
+</html>

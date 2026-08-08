@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protein Graph</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.19.0/cytoscape.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #2d7f3d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            margin: 20px;
+        }
+
+        .search-form {
+            background-color: #f1f1f1;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .protein-details {
+            margin-top: 20px;
+        }
+
+        .graph-container {
+            margin-top: 30px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #graph {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #2d7f3d;
+        }
+
+        button {
+            background-color: #2d7f3d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #255f30;
+        }
+
+        a {
+            color: #2d7f3d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Protein Search</h1>
+    
+    <div class="container">
+        <div class="search-form">
+            <form action="/search" method="post">
+                <label for="protein_entry">Protein Entry:</label>
+                <input type="text" id="protein_entry" name="protein_entry" required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        {% if protein_details %}
+        <div class="protein-details">
+            <h3>Protein Details:</h3>
+            <p><strong>Entry:</strong> {{ protein_details.Entry }}</p>
+            <p><strong>Entry Name:</strong> {{ protein_details['Entry Name'] }}</p>
+            <p><strong>Protein Names:</strong> {{ protein_details['Protein Names'] }}</p>
+            <p><strong>Gene Names:</strong> {{ protein_details['Gene Names'] }}</p>
+            <p><strong>Organism:</strong> {{ protein_details.Organism }}</p>
+            <p><strong>EC Number:</strong> {{ protein_details['EC number'] }}</p>
+            <p><strong>InterPro:</strong> {{ protein_details.InterPro }}</p>
+            <p><strong>Sequence:</strong> {{ protein_details.Sequence }}</p>
+        </div>
+        {% endif %}
+
+        {% if nodes %}
+            <div class="graph-container">
+                <h3>Protein Graph:</h3>
+                <div id="graph"></div>
+
+                <script>
+                    var cy = cytoscape({
+                        container: document.getElementById('graph'),
+                        
+                        elements: [
+                            {% for node in nodes %}
+                                { data: { id: "{{ node.data.id }}", label: "{{ node.data.label }}", entry_name: "{{ node.data.entry_name }}", gene_names: "{{ node.data.gene_names }}", organism: "{{ node.data.organism }}", ec_number: "{{ node.data.ec_number }}", sequence: "{{ node.data.sequence }}" }},
+                            {% endfor %}
+                            {% for edge in edges %}
+                                { data: { source: "{{ edge.data.source }}", target: "{{ edge.data.target }}", weight: "{{ edge.data.weight }}" }},
+                            {% endfor %}
+                        ],
+                        
+                        style: [
+                            {
+                                selector: 'node',
+                                style: {
+                                    'content': 'data(label)',
+                                    'text-valign': 'center',
+                                    'text-halign': 'center',
+                                    'background-color': '#66cc66',
+                                    'border-color': '#2d7f3d',
+                                    'border-width': 2,
+                                    'width': 50,
+                                    'height': 50
+                                }
+                            },
+                            {
+                                selector: 'edge',
+                                style: {
+                                    'content': 'data(weight)', // Display edge weights as labels
+                                    'width': 2,
+                                    'line-color': '#000000',
+                                    'target-arrow-color': '#000000',
+                                    'target-arrow-shape': 'triangle',
+                                    'line-style': 'solid',
+                                    'font-size': 10,
+                                    'text-rotation': 'autorotate', // Rotate labels to align with edges
+                                    'color': '#555'
+                                }
+                            }
+                        ],
+                        
+                        layout: {
+                            name: 'cose',
+                            padding: 10
+                        }
+                    });
+
+                    cy.on('tap', 'node', function(evt) {
+                        var nodeData = evt.target.data();
+                        alert(
+                            "Protein ID: " + nodeData.id + "\n" +
+                            "Entry Name: " + nodeData.entry_name + "\n" +
+                            "Gene Names: " + nodeData.gene_names + "\n" +
+                            "Organism: " + nodeData.organism + "\n" +
+                            "EC Number: " + nodeData.ec_number + "\n" +
+                            "Sequence: " + nodeData.sequence
+                        );
+                    });
+                </script>
+            </div>
+        {% endif %}
+        
+        <br>
+
+        <a href="/statistics">View Statistics</a>
+    </div>
+
+</body>
+</html>
